@@ -82,5 +82,5 @@ class CheckboxInputField(FormField):
         if type(value) == bool:
             normalized = is_checked
         else:
-            normalized = value if is_checked else None
+            normalized = value if is_checked else ''
         return normalized

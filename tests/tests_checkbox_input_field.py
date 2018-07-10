@@ -80,7 +80,7 @@ class CheckboxInputFieldTestCase(unittest.TestCase):
         self.assertEqual(normalized, expected)
 
     def test_normalize_checkbox_unicode_value_unchecked(self):
-        expected = None
+        expected = ''
         field = CheckboxInputField('test_attr',
             label='Test Attribute',
             attr_value='test'
