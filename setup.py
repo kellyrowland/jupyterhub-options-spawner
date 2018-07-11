@@ -24,7 +24,7 @@ with open(pjoin(here, 'version.py')) as f:
 
 setup_args = dict(
     name                = 'optionsspawner',
-    packages            = ['optionsspawner'],
+    packages            = ['optionsspawner', 'optionsspawner.forms'],
     version             = version_ns['__version__'],
     description         = """Options Form Spawner: Mixins and utilities for adding options forms with validation to JupyterHub spawners.""",
     long_description    = "",
