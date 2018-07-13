@@ -65,10 +65,9 @@ class OptionsFormSpawner(wrapspawner.WrapSpawner):
         for trait_name, value in normalized_options.items():
             setattr(spawner_instance, trait_name, value)
 
-    @tornado.gen.coroutine
     def start(self, *args, **kwargs):
         """Propagates form-defined traits and values to child spawner before starting."""
         self.construct_child()
         self._apply_traits_from_fields(spawner_instance=self.child_spawner)
         self._set_trait_values_from_options(spawner_instance=self.child_spawner)
-        super().start(*args, **kwargs)
+        return super().start(*args, **kwargs)
