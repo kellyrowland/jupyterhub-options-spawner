@@ -23,6 +23,11 @@ class TextInputField(FormField):
         """Defaults to a text input with no validation."""
         super().__init__(*args, attr_type=attr_type, **kwargs)
 
+    @property
+    def default_value(self):
+        value = self._attributes.get('value', '')
+        return value
+
     def render(self):
         format_values = {
             'trait_name': self.trait_name,
@@ -38,8 +43,7 @@ class TextInputField(FormField):
         trait_class = Unicode
 
         trait_kwargs = {}
-        if self.default_value:
-            trait_kwargs['default_value'] = self.default_value
+        trait_kwargs['default_value'] = self.default_value
         trait = trait_class(**trait_kwargs)
         trait.name = self.trait_name
         trait.tag(config=True)
@@ -48,13 +52,13 @@ class TextInputField(FormField):
 
     def normalize_user_option(self, option):
         """
-        Returns the option as Unicode. Returns NoneType if handed an empty string or NoneType and
-        no default has been set for the field. Raises a ValueError if this field is required but
-        empty.
+        Returns the option as Unicode. Returns and empty string if handed an empty string or
+        NoneType and no default has been set for the field. Raises a ValueError if this field is
+        required but empty.
         """
         value = option[0]
         if not value:
-            normalized_option = self.default_value or None
+            normalized_option = self.default_value
         elif not type(value) == str:
             normalized_option = str(value)
         else:

@@ -88,7 +88,7 @@ class TextInputFieldTestCase(unittest.TestCase):
         self.assertEqual(normalized, expected)
 
     def test_normalize_empty_string_no_default(self):
-        expected = None
+        expected = ''
         field = TextInputField('test_attr',
             label='Test Attribute'
         )
