@@ -80,20 +80,31 @@ class NumericalInputField(TextInputField):
         """Defaults to a numerical input with no validation."""
         super().__init__(*args, attr_type=attr_type, **kwargs)
 
-    def get_trait(self):
-        """
-        Returns either an Integer or Float traitlet for this field configuration.
-        """
+    @property
+    def default_value(self):
+        value = self._attributes.get('value', None)
+        if value is None:
+            value = 0.0 if self._is_float() else 0
+        return value
+
+    def _is_float(self):
+        """Returns True if the field represents a Float, otherwise returns False."""
         is_float = False
         if 'step' in self._attributes:
             step = self._attributes['step']
             is_float = type(step) == float or step == 'any'
+        return is_float
+
+    def get_trait(self):
+        """
+        Returns either an Integer or Float traitlet for this field configuration.
+        """
+        is_float = self._is_float()
 
         trait_class = Float if is_float else Integer
 
         trait_kwargs = {}
-        if self.default_value:
-            trait_kwargs['default_value'] = self.default_value
+        trait_kwargs['default_value'] = self.default_value
         trait = trait_class(**trait_kwargs)
         trait.name = self.trait_name
         trait.tag(config=True)
