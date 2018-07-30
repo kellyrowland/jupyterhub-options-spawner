@@ -99,9 +99,7 @@ class NumericalInputField(TextInputField):
         """
         Returns either an Integer or Float traitlet for this field configuration.
         """
-        is_float = self._is_float()
-
-        trait_class = Float if is_float else Integer
+        trait_class = Float if self._is_float() else Integer
 
         trait_kwargs = {}
         trait_kwargs['default_value'] = self.default_value
@@ -114,14 +112,13 @@ class NumericalInputField(TextInputField):
     def normalize_user_option(self, option):
         """
         Returns the option as either an Integer or a Float, dependent upon the traitlet
-        associated with this field. Returns None if handed a NoneType and no default is set.
-        Raises a ValueError if field is required but option is None, or if the value cannot be converted.
+        associated with this field. Raises a ValueError if the value cannot be converted.
         """
         value = option[0]
         traitlet = self.get_trait()
         value_type = int if isinstance(traitlet, Integer) else float
         if value == None or value == '':
-            normalized_option = self.default_value or None
+            normalized_option = self.default_value
         elif not type(value) == value_type:
             try:
                 normalized_option = value_type(value)

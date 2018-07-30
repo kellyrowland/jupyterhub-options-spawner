@@ -99,11 +99,13 @@ class NumericalInputFieldTestCase(unittest.TestCase):
         self.assertEqual(normalized, expected)
 
     def test_normalize_empty_field_no_default_required(self):
+        expected = 0
         field = NumericalInputField('test_attr',
             label='Test Attribute',
             attr_required=True
         )
-        self.assertRaises(ValueError, field.normalize_user_option, [''])
+        normalized = field.normalize_user_option([''])
+        self.assertEqual(normalized, expected)
 
 
 if __name__ == '__main__':
