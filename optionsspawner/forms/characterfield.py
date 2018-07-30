@@ -23,6 +23,11 @@ class TextInputField(FormField):
         """Defaults to a text input with no validation."""
         super().__init__(*args, attr_type=attr_type, **kwargs)
 
+    @property
+    def default_value(self):
+        value = self._attributes.get('value', '')
+        return value
+
     def render(self):
         format_values = {
             'trait_name': self.trait_name,
@@ -38,8 +43,7 @@ class TextInputField(FormField):
         trait_class = Unicode
 
         trait_kwargs = {}
-        if self.default_value:
-            trait_kwargs['default_value'] = self.default_value
+        trait_kwargs['default_value'] = self.default_value
         trait = trait_class(**trait_kwargs)
         trait.name = self.trait_name
         trait.tag(config=True)
@@ -48,13 +52,13 @@ class TextInputField(FormField):
 
     def normalize_user_option(self, option):
         """
-        Returns the option as Unicode. Returns NoneType if handed an empty string or NoneType and
-        no default has been set for the field. Raises a ValueError if this field is required but
-        empty.
+        Returns the option as Unicode. Returns and empty string if handed an empty string or
+        NoneType and no default has been set for the field. Raises a ValueError if this field is
+        required but empty.
         """
         value = option[0]
         if not value:
-            normalized_option = self.default_value or None
+            normalized_option = self.default_value
         elif not type(value) == str:
             normalized_option = str(value)
         else:
@@ -76,20 +80,29 @@ class NumericalInputField(TextInputField):
         """Defaults to a numerical input with no validation."""
         super().__init__(*args, attr_type=attr_type, **kwargs)
 
-    def get_trait(self):
-        """
-        Returns either an Integer or Float traitlet for this field configuration.
-        """
+    @property
+    def default_value(self):
+        value = self._attributes.get('value', None)
+        if value is None:
+            value = 0.0 if self._is_float() else 0
+        return value
+
+    def _is_float(self):
+        """Returns True if the field represents a Float, otherwise returns False."""
         is_float = False
         if 'step' in self._attributes:
             step = self._attributes['step']
             is_float = type(step) == float or step == 'any'
+        return is_float
 
-        trait_class = Float if is_float else Integer
+    def get_trait(self):
+        """
+        Returns either an Integer or Float traitlet for this field configuration.
+        """
+        trait_class = Float if self._is_float() else Integer
 
         trait_kwargs = {}
-        if self.default_value:
-            trait_kwargs['default_value'] = self.default_value
+        trait_kwargs['default_value'] = self.default_value
         trait = trait_class(**trait_kwargs)
         trait.name = self.trait_name
         trait.tag(config=True)
@@ -99,14 +112,13 @@ class NumericalInputField(TextInputField):
     def normalize_user_option(self, option):
         """
         Returns the option as either an Integer or a Float, dependent upon the traitlet
-        associated with this field. Returns None if handed a NoneType and no default is set.
-        Raises a ValueError if field is required but option is None, or if the value cannot be converted.
+        associated with this field. Raises a ValueError if the value cannot be converted.
         """
         value = option[0]
         traitlet = self.get_trait()
         value_type = int if isinstance(traitlet, Integer) else float
         if value == None or value == '':
-            normalized_option = self.default_value or None
+            normalized_option = self.default_value
         elif not type(value) == value_type:
             try:
                 normalized_option = value_type(value)
